@@ -107,3 +107,4 @@ leer_profesores()
 #En el adminsitrador de archivos: C:\ABDS5A\Practicas - Git Presionar directorio y poner CMD para abrir directo en el directorio la ubicacion del entorno virtual
 #python -m venv bdatos
 #python tipo_proyectos.py
+#bdatos\Scripts\activate
