@@ -30,8 +30,9 @@ def conectar():
         print(f"Error al conectar a la base de datos: {e}")
         return None
 
-
-def crear_tipo_proyecto(tipo, nombre_tipo):
+def crear_tipo_proyecto():
+    tipo = input("Ingrese el código del tipo de proyecto (Ej: DT): ").strip()
+    nombre_tipo = input("Ingrese el nombre del tipo de proyecto: ").strip()
     conexion = conectar()
     if conexion:
         try:
@@ -40,9 +41,9 @@ def crear_tipo_proyecto(tipo, nombre_tipo):
             valores = (tipo, nombre_tipo)
             cursor.execute(sql, valores)
             conexion.commit()
-            print("Tipo de proyecto creado exitosamente")
+            print("✅ Tipo de proyecto creado exitosamente.")
         except Error as e:
-            print(f"Error al crear el Tipo de proyecto: {e}")
+            print(f"❌ Error al crear el Tipo de proyecto: {e}")
         finally:
             cursor.close()
             conexion.close()
@@ -54,15 +55,21 @@ def leer_tipos_proyecto():
             cursor = conexion.cursor()
             cursor.execute("SELECT * FROM tipo_proyecto")
             resultados = cursor.fetchall()
-            for fila in resultados:
-                print(fila)
+            if resultados:
+                print("\n📋 Lista de Tipos de Proyecto:")
+                for fila in resultados:
+                    print(f"🔹 Código: {fila[0]}, Nombre: {fila[1]}")
+            else:
+                print("⚠️ No hay tipos de proyecto registrados.")
         except Error as e:
-            print(f"Error al leer el Tipo de proyecto: {e}")
+            print(f"❌ Error al leer los Tipos de Proyecto: {e}")
         finally:
             cursor.close()
             conexion.close()
 
-def actualizar_tipo_proyecto(tipo, nuevo_nombre):
+def actualizar_tipo_proyecto():
+    tipo = input("Ingrese el código del tipo de proyecto a actualizar: ").strip()
+    nuevo_nombre = input("Ingrese el nuevo nombre: ").strip()
     conexion = conectar()
     if conexion:
         try:
@@ -71,14 +78,18 @@ def actualizar_tipo_proyecto(tipo, nuevo_nombre):
             valores = (nuevo_nombre, tipo)
             cursor.execute(sql, valores)
             conexion.commit()
-            print("Tipo de proyecto actualizado exitosamente")
+            if cursor.rowcount > 0:
+                print("✅ Tipo de proyecto actualizado exitosamente.")
+            else:
+                print("⚠️ No se encontró un tipo de proyecto con ese código.")
         except Error as e:
-            print(f"Error al actualizar el Tipo de proyecto: {e}")
+            print(f"❌ Error al actualizar el Tipo de proyecto: {e}")
         finally:
             cursor.close()
             conexion.close()
 
-def eliminar_tipo_proyecto(tipo):
+def eliminar_tipo_proyecto():
+    tipo = input("Ingrese el código del tipo de proyecto a eliminar: ").strip()
     conexion = conectar()
     if conexion:
         try:
@@ -87,20 +98,40 @@ def eliminar_tipo_proyecto(tipo):
             valores = (tipo,)
             cursor.execute(sql, valores)
             conexion.commit()
-            print("Tipo de proyecto eliminado exitosamente")
+            if cursor.rowcount > 0:
+                print("✅ Tipo de proyecto eliminado exitosamente.")
+            else:
+                print("⚠️ No se encontró un tipo de proyecto con ese código.")
         except Error as e:
-            print(f"Error al eliminar el Tipo de proyecto: {e}")
+            print(f"❌ Error al eliminar el Tipo de proyecto: {e}")
         finally:
             cursor.close()
             conexion.close()
 
-# Ejemplos
-crear_tipo_proyecto('DT', 'Manukistan')
-crear_tipo_proyecto('I', 'Angel - Prueba')
-crear_tipo_proyecto('DT', 'Desarrollo Tecnológico')
-leer_tipos_proyecto()
-actualizar_tipo_proyecto('DT', 'Desarrollo Tecnológico')
-actualizar_tipo_proyecto('I', 'Investigación')
-leer_tipos_proyecto()
-eliminar_tipo_proyecto('DT')
-leer_tipos_proyecto()
+# Menú 
+def menu():
+    while True:
+        print("\n📌 MENÚ CRUD - Tipos de Proyecto")
+        print("C - Crear un nuevo Tipo de Proyecto")
+        print("R - Leer todos los Tipos de Proyecto")
+        print("U - Actualizar un Tipo de Proyecto")
+        print("D - Eliminar un Tipo de Proyecto")
+        print("S - Salir")
+
+        opcion = input("Seleccione una opción: ").strip().upper()
+
+        if opcion == 'C':
+            crear_tipo_proyecto()
+        elif opcion == 'R':
+            leer_tipos_proyecto()
+        elif opcion == 'U':
+            actualizar_tipo_proyecto()
+        elif opcion == 'D':
+            eliminar_tipo_proyecto()
+        elif opcion == 'S':
+            print("👋 Saliendo del programa...")
+            break
+        else:
+            print("⚠️ Opción no válida. Intente nuevamente.")
+
+menu()
