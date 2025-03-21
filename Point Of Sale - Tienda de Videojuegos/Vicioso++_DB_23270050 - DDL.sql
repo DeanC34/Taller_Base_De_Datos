@@ -18,8 +18,6 @@ CREATE TABLE Proveedor (
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Automaticamente se pondra la fecha y hora de mi dispositivo cuando se añada un campo en la tabla
-
 CREATE TABLE Cliente (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -43,6 +41,13 @@ CREATE TABLE Sucursal (
     telefono VARCHAR(20)
 );
 
+-- Tabla para Roles: Administrador, Cajero, Cliente
+CREATE TABLE Rol (
+    id_rol INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_rol VARCHAR(50) NOT NULL UNIQUE, 
+    descripcion TEXT
+);
+
 -- Tablas Hijas
 
 CREATE TABLE Empleado (
@@ -55,7 +60,7 @@ CREATE TABLE Empleado (
     puesto VARCHAR(50),
     salario DECIMAL(10,2),
     fecha_contratacion DATE,
-    id_sucursal INT, 
+    id_sucursal INT,
     CONSTRAINT Pertenece_a_una FOREIGN KEY (id_sucursal) REFERENCES Sucursal(id_sucursal)
 );
 
@@ -65,8 +70,8 @@ CREATE TABLE Producto (
     descripcion TEXT,
     precio DECIMAL(10,2) NOT NULL,
     stock INT DEFAULT 0,
-    id_categoria INT,  
-    id_proveedor INT,  
+    id_categoria INT,
+    id_proveedor INT,
     CONSTRAINT Pertenece FOREIGN KEY (id_categoria) REFERENCES CategoriaProducto(id_categoria),
     CONSTRAINT Es_Suministrado FOREIGN KEY (id_proveedor) REFERENCES Proveedor(id_proveedor)
 );
@@ -75,15 +80,15 @@ CREATE TABLE Inventario (
     id_inventario INT AUTO_INCREMENT PRIMARY KEY,
     id_producto INT,
     cantidad INT DEFAULT 0,
-    id_sucursal INT, 
+    id_sucursal INT,
     CONSTRAINT Almacena FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
     CONSTRAINT Esta_Ubicado FOREIGN KEY (id_sucursal) REFERENCES Sucursal(id_sucursal)
 );
 
 CREATE TABLE Venta (
     id_venta INT AUTO_INCREMENT PRIMARY KEY,
-    id_cliente INT,  
-    id_empleado INT,  
+    id_cliente INT,
+    id_empleado INT,
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) NOT NULL,
     CONSTRAINT Adquiere FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente),
@@ -111,10 +116,46 @@ CREATE TABLE Pago (
 
 CREATE TABLE Usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    id_empleado INT,  
+    id_empleado INT,
     username VARCHAR(50) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    rol ENUM('Administrador', 'Cajero') NOT NULL,
-    CONSTRAINT Define_a FOREIGN KEY (id_empleado) REFERENCES Empleado(id_empleado)
+    id_rol INT,  
+    CONSTRAINT Define_a FOREIGN KEY (id_empleado) REFERENCES Empleado(id_empleado),
+    CONSTRAINT Tiene_rol FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
 );
 
+CREATE TABLE MatrizDerechos (
+    id_derecho INT AUTO_INCREMENT PRIMARY KEY,
+    id_rol INT,
+    modulo VARCHAR(50) NOT NULL, -- Módulo o funcionalidad
+    permiso ENUM('Lectura', 'Escritura', 'Modificación', 'Eliminación') NOT NULL,
+    CONSTRAINT Asigna_derecho FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
+);
+
+-- Inserción 
+INSERT INTO Rol (nombre_rol, descripcion) VALUES
+('Administrador', 'Acceso completo al sistema'),
+('Cajero', 'Gestiona ventas e inventario'),
+('Cliente', 'Visualización de sus compras');
+
+INSERT INTO MatrizDerechos (id_rol, modulo, permiso) VALUES
+(1, 'Ventas', 'Escritura'),
+(1, 'Inventario', 'Modificación'),
+(1, 'Usuarios', 'Escritura'),
+(2, 'Ventas', 'Escritura'),
+(2, 'Inventario', 'Lectura'),
+(3, 'Compras', 'Lectura');
+
+-- Creación de Usuarios
+
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin_pass';
+GRANT ALL PRIVILEGES ON ViciosoPP.* TO 'admin'@'localhost' WITH GRANT OPTION;
+
+CREATE USER 'cajero'@'localhost' IDENTIFIED BY 'cajero_pass';
+GRANT SELECT, INSERT, UPDATE ON ViciosoPP.* TO 'cajero'@'localhost';
+
+CREATE USER 'cliente'@'localhost' IDENTIFIED BY 'cliente_pass';
+GRANT SELECT ON ViciosoPP.* TO 'cliente'@'localhost';
+
+-- Aplicar
+FLUSH PRIVILEGES;
