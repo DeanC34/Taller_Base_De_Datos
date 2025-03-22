@@ -25,7 +25,7 @@ INSERT INTO Sucursal (nombre, direccion, telefono) VALUES
 ('Sucursal Centro', 'Av. Reforma #123, CDMX', '5512345678'),
 ('Sucursal Norte', 'Blvd. Insurgentes #45, Monterrey', '5598765432');
 
--- La fecha y hora se ponen en automatico 
+-- La fecha y hora se añaden automáticamente
 
 -- Tablas Hijas
 
@@ -39,7 +39,6 @@ INSERT INTO Producto (nombre, descripcion, precio, stock, id_categoria, id_prove
 ('Xbox Series X', 'Consola de última generación de Microsoft', 11999.99, 15, 2, 3),
 ('Control DualSense', 'Control inalámbrico para PS5', 1799.99, 40, 3, 2);
 
--- Insertar Inventario
 INSERT INTO Inventario (id_producto, cantidad, id_sucursal) VALUES
 (1, 10, 1),
 (2, 5, 1),
@@ -48,19 +47,21 @@ INSERT INTO Inventario (id_producto, cantidad, id_sucursal) VALUES
 
 INSERT INTO Venta (id_cliente, id_empleado, total) VALUES
 (1, 1, 1299.99), 
-(2, 2, 11999.99); 
--- Ejemplo: Cliente 2 compró un PS5
+(2, 2, 11999.99);
 
 INSERT INTO DetalleVenta (id_venta, id_producto, cantidad, precio_unitario, subtotal) VALUES
 (1, 1, 1, 1299.99, 1299.99),
 (2, 2, 1, 11999.99, 11999.99);
 
+-- Pagos
 INSERT INTO Pago (id_venta, metodo_pago, monto) VALUES
 (1, 'Efectivo', 1299.99),
 (2, 'Tarjeta Crédito', 11999.99);
 
-INSERT INTO Usuario (id_empleado, username, password_hash, rol) VALUES
-(1, 'jorge123', 'contraseña1', 'Cajero'),
-(2, 'maria_admin', 'contraseña2', 'Administrador');
+-- Asignar Roles
+-- 1 = Administrador, 2 = Cajero
+INSERT INTO Usuario (id_empleado, username, password_hash, id_rol) VALUES
+(1, 'jorge123', 'contraseña1', 2), -- Jorge es Cajero
+(2, 'maria_admin', 'contraseña2', 1); -- María es Administradora
 
 

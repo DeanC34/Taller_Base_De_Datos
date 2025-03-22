@@ -1,26 +1,5 @@
-import mysql.connector
+from ViciosoPP_Conector_Python_23270050 import conectar_bd
 from mysql.connector import Error
-
-#######
-# Ángel Soto Pérez - S5A - 23270050 - 15/03/2025
-# CRUD para el POS "Vicioso++" con conexión a MySQL
-#######
-
-# 🔗 Función para conectar a la base de datos
-def conectar_bd():
-    try:
-        conexion = mysql.connector.connect(
-            host="localhost",        # Cambia si usas otro host
-            user="root",             # Tu usuario de MySQL
-            password="tu_contraseña", # Tu contraseña de MySQL
-            database="ViciosoPP"     # La base de datos del POS
-        )
-        if conexion.is_connected():
-            print("✅ Conexión exitosa a la base de datos")
-        return conexion
-    except Error as error:
-        print(f"❌ Error al conectar con MySQL: {error}")
-        return None
 
 # 📌 CRUD para la tabla Producto
 def crear_producto():
@@ -35,6 +14,18 @@ def crear_producto():
     if conexion:
         try:
             cursor = conexion.cursor()
+            
+            # Validar existencia de id_categoria e id_proveedor
+            cursor.execute("SELECT id_categoria FROM CategoriaProducto WHERE id_categoria = %s", (id_categoria,))
+            if cursor.fetchone() is None:
+                print("⚠️ La categoría no existe. Verifique el ID.")
+                return
+
+            cursor.execute("SELECT id_proveedor FROM Proveedor WHERE id_proveedor = %s", (id_proveedor,))
+            if cursor.fetchone() is None:
+                print("⚠️ El proveedor no existe. Verifique el ID.")
+                return
+
             sql = "INSERT INTO Producto (nombre, descripcion, precio, stock, id_categoria, id_proveedor) VALUES (%s, %s, %s, %s, %s, %s)"
             valores = (nombre, descripcion, precio, stock, id_categoria, id_proveedor)
             cursor.execute(sql, valores)
@@ -108,15 +99,15 @@ def eliminar_producto():
             cursor.close()
             conexion.close()
 
-# 📌 Menú principal
-def menu():
+# 📌 Menú para gestión de productos
+def menu_producto():
     while True:
-        print("\n🎮 MENÚ CRUD - Productos en Vicioso++")
+        print("\n📦 MENÚ CRUD - Productos en Vicioso++")
         print("1️⃣ - Crear un nuevo producto")
         print("2️⃣ - Leer todos los productos")
         print("3️⃣ - Actualizar un producto")
         print("4️⃣ - Eliminar un producto")
-        print("5️⃣ - Salir")
+        print("5️⃣ - Volver al menú principal")
 
         opcion = input("Seleccione una opción: ").strip()
 
@@ -129,10 +120,6 @@ def menu():
         elif opcion == '4':
             eliminar_producto()
         elif opcion == '5':
-            print("👋 Saliendo del programa...")
             break
         else:
             print("⚠️ Opción no válida. Intente nuevamente.")
-
-# 🏁 Ejecutar el menú
-menu()
