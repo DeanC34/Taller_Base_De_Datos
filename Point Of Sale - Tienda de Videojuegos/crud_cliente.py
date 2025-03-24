@@ -1,4 +1,4 @@
-from ViciosoPP_Conector_Python_23270050 import conectar_bd
+from db_connector import conectar_bd
 from mysql.connector import Error
 
 # 📌 CRUD para la tabla Cliente

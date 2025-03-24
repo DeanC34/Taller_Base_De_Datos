@@ -11,32 +11,16 @@ from crud_detalleventa import menu_detalle_venta
 # CRUD para el POS "Vicioso++" con conexión a MySQL
 #######
 
-# 🔗 Función para conectar a la base de datos
-def conectar_bd():
-    try:
-        conexion = mysql.connector.connect(
-            host="localhost",        # host principal
-            user="root",             # root de mysql commandline
-            password="oracle",       # Contraseña MySQL
-            database="viciosopp"     # La base de datos del POS
-        )
-        if conexion.is_connected():
-            print("✅ Conexión exitosa a la base de datos")
-        return conexion
-    except Error as error:
-        print(f"❌ Error al conectar con MySQL: {error}")
-        return None
-
 # 📌 Menú principal
 def menu_principal():
     while True:
         print("\n🎮 MENÚ PRINCIPAL - Vicioso++")
-        print("1️⃣ - Gestión de Productos")
-        print("2️⃣ - Gestión de Clientes")
-        print("3️⃣ - Gestión de Empleados")
-        print("4️⃣ - Gestión de Ventas")
-        print("5️⃣ - Gestión de Detalle de Ventas")
-        print("6️⃣ - Salir")
+        print("1️.- Gestión de Productos")
+        print("2.- Gestión de Clientes")
+        print("3️.- Gestión de Empleados")
+        print("4️.- Gestión de Ventas")
+        print("5️.- Gestión de Detalle de Ventas")
+        print("6️.- Salir")
 
         opcion = input("Seleccione una opción: ").strip()
 
