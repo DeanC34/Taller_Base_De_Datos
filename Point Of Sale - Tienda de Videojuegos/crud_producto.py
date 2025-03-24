@@ -103,11 +103,11 @@ def eliminar_producto():
 def menu_producto():
     while True:
         print("\n📦 MENÚ CRUD - Productos en Vicioso++")
-        print("1️⃣ - Crear un nuevo producto")
-        print("2️⃣ - Leer todos los productos")
-        print("3️⃣ - Actualizar un producto")
-        print("4️⃣ - Eliminar un producto")
-        print("5️⃣ - Volver al menú principal")
+        print("1️.- Crear un nuevo producto")
+        print("2️.- Leer todos los productos")
+        print("3️.- Actualizar un producto")
+        print("4️.- Eliminar un producto")
+        print("5️.- Volver al menú principal")
 
         opcion = input("Seleccione una opción: ").strip()
 

@@ -91,11 +91,11 @@ def eliminar_cliente():
 def menu_cliente():
     while True:
         print("\n👥 MENÚ CRUD - Clientes en Vicioso++")
-        print("1️⃣ - Crear un nuevo cliente")
-        print("2️⃣ - Leer todos los clientes")
-        print("3️⃣ - Actualizar un cliente")
-        print("4️⃣ - Eliminar un cliente")
-        print("5️⃣ - Volver al menú principal")
+        print("1.- Crear un nuevo cliente")
+        print("2️.- Leer todos los clientes")
+        print("3️.- Actualizar un cliente")
+        print("4️.- Eliminar un cliente")
+        print("5️.- Volver al menú principal")
 
         opcion = input("Seleccione una opción: ").strip()
 

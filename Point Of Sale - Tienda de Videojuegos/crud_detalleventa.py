@@ -116,11 +116,11 @@ def eliminar_detalle_venta():
 def menu_detalle_venta():
     while True:
         print("\n📦 MENÚ CRUD - Detalles de Venta en Vicioso++")
-        print("1️⃣ - Registrar nuevo detalle de venta")
-        print("2️⃣ - Ver detalles de una venta")
-        print("3️⃣ - Actualizar un detalle de venta")
-        print("4️⃣ - Eliminar un detalle de venta")
-        print("5️⃣ - Volver al menú principal")
+        print("1.- Registrar nuevo detalle de venta")
+        print("2️.- Ver detalles de una venta")
+        print("3️.- Actualizar un detalle de venta")
+        print("4️.- Eliminar un detalle de venta")
+        print("5️.- Volver al menú principal")
 
         opcion = input("Seleccione una opción: ").strip()
 

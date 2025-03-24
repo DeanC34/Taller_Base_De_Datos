@@ -98,11 +98,11 @@ def eliminar_venta():
 def menu_venta():
     while True:
         print("\n🧾 MENÚ CRUD - Ventas en Vicioso++")
-        print("1️⃣ - Registrar nueva venta")
-        print("2️⃣ - Ver todas las ventas")
-        print("3️⃣ - Actualizar una venta")
-        print("4️⃣ - Eliminar una venta")
-        print("5️⃣ - Volver al menú principal")
+        print("1️.- Registrar nueva venta")
+        print("2️.- Ver todas las ventas")
+        print("3️.- Actualizar una venta")
+        print("4️.- Eliminar una venta")
+        print("5️.- Volver al menú principal")
 
         opcion = input("Seleccione una opción: ").strip()
 
