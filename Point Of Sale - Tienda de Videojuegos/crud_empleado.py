@@ -102,11 +102,11 @@ def eliminar_empleado():
 def menu_empleado():
     while True:
         print("\n📦 MENÚ CRUD - Empleados en Vicioso++")
-        print("1️⃣ - Contratar empleado")
-        print("2️⃣ - Ver todos los empleados")
-        print("3️⃣ - Actualizar un empleado")
-        print("4️⃣ - Destituir empleado")
-        print("5️⃣ - Volver al menú principal")
+        print("1.- Contratar empleado")
+        print("2.- Ver todos los empleados")
+        print("3.- Actualizar un empleado")
+        print("4.- Destituir empleado")
+        print("5.- Volver al menú principal")
 
         opcion = input("Seleccione una opción: ").strip()
 
