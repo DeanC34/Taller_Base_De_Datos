@@ -7,7 +7,7 @@ def crear_producto():
     descripcion = input("Ingrese la descripción del producto: ").strip()
     precio = float(input("Ingrese el precio del producto: "))
     stock = int(input("Ingrese el stock inicial: "))
-    id_categoria = int(input("Ingrese el ID de la categoría: "))
+    id_categoria = int(input("(1.- Videojuegos, 2.-Consolas, 3.- Accesorios) \n Ingrese el ID de la categoría: "))
     id_proveedor = int(input("Ingrese el ID del proveedor: "))
 
     conexion = conectar_bd()
