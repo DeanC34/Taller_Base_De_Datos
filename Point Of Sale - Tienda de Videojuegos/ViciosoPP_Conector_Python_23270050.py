@@ -6,6 +6,11 @@ from crud_empleado import menu_empleado
 from crud_venta import menu_venta
 from crud_detalleventa import menu_detalle_venta
 
+# Cambiar todo a gestores de interfaces
+# Tkinter
+# pyqt6
+# flet
+
 #######
 # Ángel Soto Pérez - S5A - 23270050 - 15/03/2025
 # CRUD para el POS "Vicioso++" con conexión a MySQL
@@ -15,12 +20,12 @@ from crud_detalleventa import menu_detalle_venta
 def menu_principal():
     while True:
         print("\n🎮 MENÚ PRINCIPAL - Vicioso++")
-        print("1️.- Gestión de Productos")
-        print("2.- Gestión de Clientes")
-        print("3️.- Gestión de Empleados")
-        print("4️.- Gestión de Ventas")
-        print("5️.- Gestión de Detalle de Ventas")
-        print("6️.- Salir")
+        print("1 .- Gestión de Productos")
+        print("2 .- Gestión de Clientes")
+        print("3 .- Gestión de Empleados")
+        print("4 .- Gestión de Ventas")
+        print("5 .- Gestión de Detalle de Ventas")
+        print("6 .- Salir")
 
         opcion = input("Seleccione una opción: ").strip()
 

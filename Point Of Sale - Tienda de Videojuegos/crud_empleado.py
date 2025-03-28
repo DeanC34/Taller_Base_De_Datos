@@ -104,7 +104,7 @@ def menu_empleado():
         print("\n📦 MENÚ CRUD - Empleados en Vicioso++")
         print("1.- Contratar empleado")
         print("2.- Ver todos los empleados")
-        print("3.- Actualizar un empleado")
+        print("3.- Modificar datos de un empleado")
         print("4.- Destituir empleado")
         print("5.- Volver al menú principal")
 
