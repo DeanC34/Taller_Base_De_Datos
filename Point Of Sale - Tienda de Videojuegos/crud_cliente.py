@@ -1,5 +1,122 @@
 from db_connector import conectar_bd
 from mysql.connector import Error
+import re 
+
+# Inicio: Para interfaz flet
+
+# Obtener todos los clientes para la tabla
+def obtener_clientes():
+    conexion = conectar_bd()
+    clientes = []
+    if conexion:
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            cursor.execute("SELECT id_cliente as id, nombre, apellido, telefono, email, direccion FROM Cliente")
+            clientes = cursor.fetchall()
+        except Error as error:
+            print(f"❌ Error al obtener clientes: {error}")
+        finally:
+            cursor.close()
+            conexion.close()
+    return clientes
+
+def crear_cliente_backend(nombre, apellido, telefono, email, direccion):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            # Verificar si el email ya existe
+            cursor.execute("SELECT id_cliente FROM Cliente WHERE email = %s", (email,))
+            if cursor.fetchone():
+                print("❌ Ya existe un cliente con este email")
+                return False
+                
+            sql = """INSERT INTO Cliente 
+                    (nombre, apellido, telefono, email, direccion) 
+                    VALUES (%s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (nombre, apellido, telefono, email, direccion))
+            conexion.commit()
+            print("✅ Cliente creado correctamente.")
+            return True
+        except Error as error:
+            print(f"❌ Error al crear cliente: {error}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+def obtener_cliente_por_id(id_cliente):
+    conexion = conectar_bd()
+    cursor = conexion.cursor()
+
+    consulta = "SELECT id_cliente, nombre, apellido, telefono, email, direccion FROM Cliente WHERE id_cliente = %s"
+    cursor.execute(consulta, (id_cliente,))
+    cliente = cursor.fetchone()
+
+    cursor.close()
+    conexion.close()
+
+    return cliente
+
+def actualizar_cliente_backend(id_cliente, nombre, apellido, telefono, email, direccion):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            
+            # Validación: Verificar si el email ya existe en otro cliente
+            cursor.execute(
+                "SELECT id_cliente FROM Cliente WHERE email = %s AND id_cliente != %s", 
+                (email, id_cliente)
+            )
+            if cursor.fetchone():
+                print("❌ Ya existe otro cliente con este email")
+                return False
+                
+            # Mejor expresión regular para validación de email
+            if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+                print(f"❌ Formato de email inválido: {email}")
+                return False
+
+            sql = """
+            UPDATE Cliente 
+            SET nombre = %s, apellido = %s, telefono = %s, email = %s, direccion = %s 
+            WHERE id_cliente = %s
+            """
+            cursor.execute(sql, (nombre, apellido, telefono, email, direccion, id_cliente))
+            conexion.commit()
+            return cursor.rowcount > 0
+        except Error as e:
+            print(f"❌ Error al actualizar el cliente: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+def eliminar_cliente_backend(id_cliente):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            cursor.execute("SELECT id_cliente FROM Cliente WHERE id_cliente = %s", (id_cliente,))
+            if not cursor.fetchone():
+                return False
+            
+            cursor.execute("DELETE FROM Cliente WHERE id_cliente = %s", (id_cliente,))
+            conexion.commit()
+            return cursor.rowcount > 0
+        except Error as e:
+            print(f"❌ Error al eliminar cliente: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+# Fin: Para interfaz flet 
+
 
 # 📌 CRUD para la tabla Cliente
 def crear_cliente():

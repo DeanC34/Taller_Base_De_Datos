@@ -1,9 +1,156 @@
 from db_connector import conectar_bd
 from mysql.connector import Error
+import re
 
-#######
-# CRUD para la tabla Empleado
-#######
+# Inicio: Para interfaz flet
+
+def obtener_empleados():
+    """Obtiene todos los empleados para mostrar en la tabla"""
+    conexion = conectar_bd()
+    empleados = []
+    if conexion:
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT e.id_empleado as id, e.nombre, e.apellido, e.telefono, e.email, 
+                       e.puesto, e.salario, e.fecha_contratacion, s.nombre as sucursal
+                FROM Empleado e
+                JOIN Sucursal s ON e.id_sucursal = s.id_sucursal
+            """)
+            empleados = cursor.fetchall()
+        except Error as error:
+            print(f"❌ Error al obtener empleados: {error}")
+        finally:
+            cursor.close()
+            conexion.close()
+    return empleados
+
+def crear_empleado_backend(nombre, apellido, telefono, email, direccion, puesto, salario, fecha_contratacion, id_sucursal):
+    """Crea un nuevo empleado en la base de datos"""
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            
+            # Validar email único
+            cursor.execute("SELECT id_empleado FROM Empleado WHERE email = %s", (email,))
+            if cursor.fetchone():
+                print("❌ Ya existe un empleado con este email")
+                return False
+                
+            # Validar formato email
+            if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+                print("❌ Formato de email inválido")
+                return False
+
+            sql = """
+            INSERT INTO Empleado 
+            (nombre, apellido, telefono, email, direccion, puesto, salario, fecha_contratacion, id_sucursal) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            valores = (nombre, apellido, telefono, email, direccion, puesto, salario, fecha_contratacion, id_sucursal)
+            cursor.execute(sql, valores)
+            conexion.commit()
+            print("✅ Empleado creado correctamente.")
+            return True
+        except Error as error:
+            print(f"❌ Error al crear empleado: {error}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+def obtener_empleado_por_id(id_empleado):
+    """Obtiene un empleado específico por su ID"""
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT id_empleado, nombre, apellido, telefono, email, direccion, 
+                       puesto, salario, fecha_contratacion, id_sucursal 
+                FROM Empleado WHERE id_empleado = %s
+            """, (id_empleado,))
+            empleado = cursor.fetchone()
+            return empleado
+        except Error as error:
+            print(f"❌ Error al obtener empleado: {error}")
+            return None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None
+
+def actualizar_empleado_backend(id_empleado, nombre, apellido, telefono, email, direccion, puesto, salario, fecha_contratacion, id_sucursal):
+    """Actualiza los datos de un empleado existente"""
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            
+            # Validar email único (excluyendo al empleado actual)
+            cursor.execute(
+                "SELECT id_empleado FROM Empleado WHERE email = %s AND id_empleado != %s", 
+                (email, id_empleado)
+            )
+            if cursor.fetchone():
+                print("❌ Ya existe otro empleado con este email")
+                return False
+                
+            # Validar formato email
+            if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+                print("❌ Formato de email inválido")
+                return False
+
+            sql = """
+            UPDATE Empleado 
+            SET nombre = %s, apellido = %s, telefono = %s, email = %s, 
+                direccion = %s, puesto = %s, salario = %s, 
+                fecha_contratacion = %s, id_sucursal = %s 
+            WHERE id_empleado = %s
+            """
+            valores = (
+                nombre, apellido, telefono, email, direccion, 
+                puesto, salario, fecha_contratacion, id_sucursal, 
+                id_empleado
+            )
+            cursor.execute(sql, valores)
+            conexion.commit()
+            return cursor.rowcount > 0
+        except Error as e:
+            print(f"❌ Error al actualizar empleado: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+def eliminar_empleado_backend(id_empleado):
+    """Elimina un empleado de la base de datos"""
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            
+            # Verificar si el empleado existe
+            cursor.execute("SELECT id_empleado FROM Empleado WHERE id_empleado = %s", (id_empleado,))
+            if not cursor.fetchone():
+                return False
+            
+            # Eliminar al empleado
+            cursor.execute("DELETE FROM Empleado WHERE id_empleado = %s", (id_empleado,))
+            conexion.commit()
+            return cursor.rowcount > 0
+        except Error as e:
+            print(f"❌ Error al eliminar empleado: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+# Fin: Para interfaz flet
 
 # ➕ Crear un nuevo empleado
 def crear_empleado():

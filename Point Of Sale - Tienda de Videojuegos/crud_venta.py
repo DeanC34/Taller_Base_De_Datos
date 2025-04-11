@@ -1,9 +1,193 @@
 from db_connector import conectar_bd
 from mysql.connector import Error
-
+import re
 #######
 # CRUD para la tabla Venta
 #######
+
+# En crud_venta.py - Funciones para la interfaz Flet
+
+def obtener_ventas():
+    """Obtiene todas las ventas para mostrar en la tabla"""
+    conexion = conectar_bd()
+    ventas = []
+    if conexion:
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT v.id_venta as id, 
+                       CONCAT(c.nombre, ' ', c.apellido) as cliente,
+                       CONCAT(e.nombre, ' ', e.apellido) as empleado,
+                       v.fecha, 
+                       v.total
+                FROM Venta v
+                JOIN Cliente c ON v.id_cliente = c.id_cliente
+                JOIN Empleado e ON v.id_empleado = e.id_empleado
+                ORDER BY v.fecha DESC
+            """)
+            ventas = cursor.fetchall()
+        except Error as error:
+            print(f"❌ Error al obtener ventas: {error}")
+        finally:
+            cursor.close()
+            conexion.close()
+    return ventas
+
+def crear_venta_backend(id_cliente, id_empleado, total):
+    """Crea una nueva venta en la base de datos"""
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            
+            # Validar que cliente y empleado existan
+            cursor.execute("SELECT id_cliente FROM Cliente WHERE id_cliente = %s", (id_cliente,))
+            if not cursor.fetchone():
+                print("❌ Cliente no encontrado")
+                return False
+                
+            cursor.execute("SELECT id_empleado FROM Empleado WHERE id_empleado = %s", (id_empleado,))
+            if not cursor.fetchone():
+                print("❌ Empleado no encontrado")
+                return False
+
+            sql = "INSERT INTO Venta (id_cliente, id_empleado, total) VALUES (%s, %s, %s)"
+            valores = (id_cliente, id_empleado, total)
+            cursor.execute(sql, valores)
+            conexion.commit()
+            print("✅ Venta creada correctamente.")
+            return True
+        except Error as error:
+            print(f"❌ Error al crear venta: {error}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+def obtener_venta_por_id(id_venta):
+    """Obtiene una venta específica por su ID"""
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT v.id_venta, v.id_cliente, v.id_empleado, v.total, v.fecha,
+                       CONCAT(c.nombre, ' ', c.apellido) as cliente,
+                       CONCAT(e.nombre, ' ', e.apellido) as empleado
+                FROM Venta v
+                JOIN Cliente c ON v.id_cliente = c.id_cliente
+                JOIN Empleado e ON v.id_empleado = e.id_empleado
+                WHERE v.id_venta = %s
+            """, (id_venta,))
+            venta = cursor.fetchone()
+            return venta
+        except Error as error:
+            print(f"❌ Error al obtener venta: {error}")
+            return None
+        finally:
+            cursor.close()
+            conexion.close()
+    return None
+
+def actualizar_venta_backend(id_venta, id_cliente, id_empleado, total):
+    """Actualiza los datos de una venta existente"""
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            
+            # Validar que cliente y empleado existan
+            cursor.execute("SELECT id_cliente FROM Cliente WHERE id_cliente = %s", (id_cliente,))
+            if not cursor.fetchone():
+                print("❌ Cliente no encontrado")
+                return False
+                
+            cursor.execute("SELECT id_empleado FROM Empleado WHERE id_empleado = %s", (id_empleado,))
+            if not cursor.fetchone():
+                print("❌ Empleado no encontrado")
+                return False
+
+            sql = """
+            UPDATE Venta 
+            SET id_cliente = %s, id_empleado = %s, total = %s 
+            WHERE id_venta = %s
+            """
+            valores = (id_cliente, id_empleado, total, id_venta)
+            cursor.execute(sql, valores)
+            conexion.commit()
+            return cursor.rowcount > 0
+        except Error as e:
+            print(f"❌ Error al actualizar venta: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+def obtener_clientes_para_dropdown():
+    """Obtiene clientes para dropdown"""
+    conexion = conectar_bd()
+    clientes = []
+    if conexion:
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT id_cliente as id, CONCAT(nombre, ' ', apellido) as nombre 
+                FROM Cliente
+                ORDER BY nombre
+            """)
+            clientes = cursor.fetchall()
+        except Error as error:
+            print(f"❌ Error al obtener clientes: {error}")
+        finally:
+            cursor.close()
+            conexion.close()
+    return clientes
+
+def obtener_empleados_para_dropdown():
+    """Obtiene empleados para dropdown"""
+    conexion = conectar_bd()
+    empleados = []
+    if conexion:
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT id_empleado as id, CONCAT(nombre, ' ', apellido) as nombre 
+                FROM Empleado
+                ORDER BY nombre
+            """)
+            empleados = cursor.fetchall()
+        except Error as error:
+            print(f"❌ Error al obtener empleados: {error}")
+        finally:
+            cursor.close()
+            conexion.close()
+    return empleados
+
+def eliminar_venta_backend(id_venta):
+    """Elimina una venta de la base de datos"""
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            
+            # Verificar si la venta existe
+            cursor.execute("SELECT id_venta FROM Venta WHERE id_venta = %s", (id_venta,))
+            if not cursor.fetchone():
+                return False
+            
+            # Eliminar la venta
+            cursor.execute("DELETE FROM Venta WHERE id_venta = %s", (id_venta,))
+            conexion.commit()
+            return cursor.rowcount > 0
+        except Error as e:
+            print(f"❌ Error al eliminar venta: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
 
 # ➕ Crear una nueva venta
 def crear_venta():

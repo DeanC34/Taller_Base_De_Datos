@@ -54,6 +54,132 @@ def leer_productos():
             cursor.close()
             conexion.close()
 
+def actualizar_producto_backend(id_producto, nombre, precio, stock, id_categoria, id_proveedor):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+
+            # Validar existencia de categoría y proveedor
+            cursor.execute("SELECT id_categoria FROM CategoriaProducto WHERE id_categoria = %s", (id_categoria,))
+            if cursor.fetchone() is None:
+                print("⚠️ La categoría no existe.")
+                return
+
+            cursor.execute("SELECT id_proveedor FROM Proveedor WHERE id_proveedor = %s", (id_proveedor,))
+            if cursor.fetchone() is None:
+                print("⚠️ El proveedor no existe.")
+                return
+
+            sql = """
+            UPDATE Producto 
+            SET nombre = %s, precio = %s, stock = %s, id_categoria = %s, id_proveedor = %s 
+            WHERE id_producto = %s
+            """
+            valores = (nombre, precio, stock, id_categoria, id_proveedor, id_producto)
+            cursor.execute(sql, valores)
+            conexion.commit()
+
+            if cursor.rowcount > 0:
+                print(f"✅ Producto con ID {id_producto} actualizado correctamente.")
+            else:
+                print("⚠️ No se encontró un producto con ese ID.")
+        except Error as e:
+            print(f"❌ Error al actualizar el producto: {e}")
+        finally:
+            cursor.close()
+            conexion.close()
+
+# Inicio: Para flet
+
+def obtener_productos():
+    conexion = conectar_bd()
+    productos = []
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            cursor.execute("SELECT id_producto, nombre, descripcion, precio, stock FROM Producto")
+            resultado = cursor.fetchall()
+            for fila in resultado:
+                productos.append({
+                    "id": fila[0],
+                    "nombre": fila[1],
+                    "descripcion": fila[2],
+                    "precio": fila[3],
+                    "stock": fila[4]
+                })
+        except Error as error:
+            print(f"❌ Error al obtener los productos: {error}")
+        finally:
+            cursor.close()
+            conexion.close()
+    return productos
+
+def crear_producto_backend(nombre, precio, stock, id_categoria, id_proveedor):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+
+            # Validar existencia de categoría y proveedor
+            cursor.execute("SELECT id_categoria FROM CategoriaProducto WHERE id_categoria = %s", (id_categoria,))
+            if cursor.fetchone() is None:
+                print("⚠️ La categoría no existe.")
+                return
+
+            cursor.execute("SELECT id_proveedor FROM Proveedor WHERE id_proveedor = %s", (id_proveedor,))
+            if cursor.fetchone() is None:
+                print("⚠️ El proveedor no existe.")
+                return
+
+            sql = "INSERT INTO Producto (nombre, descripcion, precio, stock, id_categoria, id_proveedor) VALUES (%s, '', %s, %s, %s, %s)"
+            cursor.execute(sql, (nombre, precio, stock, id_categoria, id_proveedor))
+            conexion.commit()
+            print("✅ Producto creado correctamente")
+        except Error as e:
+            print(f"❌ Error al crear el producto: {e}")
+        finally:
+            cursor.close()
+            conexion.close()
+
+def obtener_producto_por_id(id_producto):
+    conexion = conectar_bd()
+    cursor = conexion.cursor()
+    
+    consulta = "SELECT id_producto, nombre, precio, stock, id_categoria, id_proveedor FROM Producto WHERE id_producto = %s"
+    cursor.execute(consulta, (id_producto,))
+    producto = cursor.fetchone()
+    
+    cursor.close()
+    conexion.close()
+    
+    return producto
+
+def eliminar_producto_backend(id_producto):
+    conexion = conectar_bd()
+    if conexion:
+        try:
+            cursor = conexion.cursor()
+            
+            # Verificar si el producto existe
+            cursor.execute("SELECT id_producto FROM Producto WHERE id_producto = %s", (id_producto,))
+            if not cursor.fetchone():
+                return False
+            
+            # Eliminar el producto
+            cursor.execute("DELETE FROM Producto WHERE id_producto = %s", (id_producto,))
+            conexion.commit()
+            return cursor.rowcount > 0
+        except Error as e:
+            print(f"Error al eliminar producto: {e}")
+            return False
+        finally:
+            cursor.close()
+            conexion.close()
+    return False
+
+# Fin de: Para flet
+
 def actualizar_producto():
     id_producto = int(input("Ingrese el ID del producto a actualizar: "))
     nuevo_nombre = input("Ingrese el nuevo nombre: ").strip()
@@ -77,6 +203,7 @@ def actualizar_producto():
         finally:
             cursor.close()
             conexion.close()
+
 
 def eliminar_producto():
     id_producto = int(input("Ingrese el ID del producto a eliminar: "))
