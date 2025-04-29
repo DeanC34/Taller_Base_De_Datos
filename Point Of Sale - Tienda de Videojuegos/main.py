@@ -401,10 +401,6 @@ class UI(ft.Container):         #UserControl -> Container
                 ft.Divider(),
                 ft.Text("Versión: 0.2.3\n© Vicioso++ 2023", size=12, color="grey")
             ], spacing=15)
-
-            self.extra_panel_1.visible = False
-            self.extra_panel_2.visible = False
-            self.extra_panel_3.visible = False
         
         else:
             self.frame_2.content = ft.Column([
