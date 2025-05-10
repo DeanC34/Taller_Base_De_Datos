@@ -371,7 +371,8 @@ class UI(ft.Container):         #UserControl -> Container
                     ft.dropdown.Option("#00BFFF", "Azul Claro (Default)"),
                     ft.dropdown.Option("#4CAF50", "Verde"),
                     ft.dropdown.Option("#FF5722", "Naranja"),
-                    ft.dropdown.Option("#9C27B0", "Púrpura")
+                    ft.dropdown.Option("#9C27B0", "Púrpura"),
+                    ft.dropdown.Option("#EDE721", "Amarrillo")
                 ],
                 value=self.color_teal,
                 on_change=self.cambiar_color_principal
@@ -380,8 +381,8 @@ class UI(ft.Container):         #UserControl -> Container
             self.frame_2.content = ft.Column([
                 ft.Text("Configuración de la App", size=22, weight=ft.FontWeight.BOLD),
                 ft.Divider(),
-                self.color_picker,
                 ft.Text("Personaliza la apariencia:", size=16),
+                self.color_picker,
             ], spacing=15)
 
             # Juego sencillo: Adivina el número

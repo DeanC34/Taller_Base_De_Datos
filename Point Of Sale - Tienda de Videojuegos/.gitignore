@@ -1,0 +1,31 @@
+# Ignorar entorno virtual
+venv/
+bdatos/
+
+# Archivos de Python compilados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos temporales de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de log o caché
+*.log
+*.tmp
+*.bak
+
+# Configuración de bases de datos o credenciales (si los llegas a usar)
+.env
+*.env
+
+# Ignorar bases de datos temporales SQLite (si se usaran)
+*.sqlite3
+
+# Ignorar dist y build si llegas a empaquetar la app
+/dist/
+/build/
